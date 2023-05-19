@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Employee Directory</title>
+  <style>
+    /* Add your custom CSS styles here for the visually appealing UI */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #3aafa9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #2b7a78;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 97%;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .employee {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .employee:hover {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .employee p {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .employee-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .employee-designation {
+      color: #666;
+    }
+
+    .employee-skills {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    
+.employee-id {
+  font-size: 14px;
+  color: #666;
+}
+    .no-results {
+      font-size: 16px;
+      color: #666;
+      text-align: center;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #feffff;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Employee Directory</h1>
+    <input type="text" id="searchName" placeholder="Search by name">
+    <input type="text" id="searchDesignationSkills" placeholder="Filter by designation/skills">
+    <div id="employeeList"></div>
+    <footer>
+      &copy; 2023 Lagan Mehta. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    // Fetch JSON data from the provided source
+    fetch('https://raw.githubusercontent.com/dixitsoham7/dixitsoham7.github.io/main/index.json')
+      .then(response => response.json())
+      .then(data => {
+        // Store the JSON data in a variable
+        const employees = data.employees;
+
+        // Render the employee list on the screen
+        renderEmployeeList(employees);
+
+        // Add event listeners for search functionality
+        document.getElementById('searchName').addEventListener('input', function () {
+          const searchValue = this.value;
+          const filteredEmployees = filterEmployeesByName(employees, searchValue);
+          renderEmployeeList(filteredEmployees);
+        });
+
+        document.getElementById('searchDesignationSkills').addEventListener('input', function () {
+          const searchValue = this.value;
+          const filteredEmployees = filterEmployeesByDesignationSkills(employees, searchValue);
+          renderEmployeeList(filteredEmployees);
+        });
+      });
+
+    // Render the employee list on the screen
+function renderEmployeeList(employees) {
+  const employeeListContainer = document.getElementById('employeeList');
+  employeeListContainer.innerHTML = '';
+
+  if (employees.length === 0) {
+    const noResultsMessage = document.createElement('p');
+    noResultsMessage.classList.add('no-results');
+    noResultsMessage.textContent = 'No employees found.';
+    employeeListContainer.appendChild(noResultsMessage);
+    return;
+  }
+
+  employees.forEach(employee => {
+    const employeeItem = document.createElement('div');
+    employeeItem.classList.add('employee');
+
+    const id = document.createElement('p');
+    id.classList.add('employee-id');
+    id.textContent = `ID: ${employee.id}` || 'N/A';
+    employeeItem.appendChild(id);
+
+    const name = document.createElement('p');
+    name.classList.add('employee-name');
+    name.textContent = employee.name || 'N/A';
+    employeeItem.appendChild(name);
+
+    const designation = document.createElement('p');
+    designation.classList.add('employee-designation');
+    designation.textContent = `Designation: ${employee.designation}` || 'N/A';
+    employeeItem.appendChild(designation);
+
+    const skills = document.createElement('p');
+    skills.classList.add('employee-skills');
+    skills.textContent = `Skills: ${employee.skills.join(', ')}`;
+    employeeItem.appendChild(skills);
+
+    employeeListContainer.appendChild(employeeItem);
+  });
+}
+
+    // Filter employees by name
+    function filterEmployeesByName(employees, name) {
+      return employees.filter(employee => employee.name && employee.name.toLowerCase().includes(name.toLowerCase()));
+    }
+
+    // Filter employees by designation/skills
+    function filterEmployeesByDesignationSkills(employees, value) {
+      return employees.filter(employee => {
+        if (employee.designation && employee.designation.toLowerCase().includes(value.toLowerCase())) {
+          return true;
+        }
+        if (employee.skills && employee.skills.some(skill => skill.toLowerCase().includes(value.toLowerCase()))) {
+          return true;
+        }
+        return false;
+      });
+    }
+  </script>
+</body>
+</html>
